@@ -1,13 +1,45 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pre Entrega 2</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Selecciona tu helado</title>
+  <link rel="stylesheet" href="./css/styles.css">
 </head>
 <body>
-    <h1>PRE ENTREGA N°2</h1>
-    <h2>Juan Martin Veron</h2>
-    <script src="./js/main.js"></script>
+
+<form id="heladoForm">
+  <div class="container">
+    <h1>Tienda de helados</h1>
+    <label for="tipoPote">Selecciona el tamaño del pote</label>
+    <select id="tipoPote" name="tipoPote">
+      <option value="" disabled selected> </option>
+      <option value="1/4">1/4 kg</option>
+      <option value="1/2">1/2 kg</option>
+      <option value="1">1 kg</option>
+    </select>
+
+    <div id="sabores">
+      <!-- Aquí se mostrarán los sabores -->
+    </div>
+
+    <div id="seleccionados">
+      <h2>Sabores seleccionados:</h2>
+      <ul id="listaSeleccionados">
+        <!-- Aquí se mostrarán los sabores seleccionados -->
+      </ul>
+    </div>
+
+    <p id="mensajeSabores">Selecciona los sabores que deseas agregar.</p>
+
+    <button type="button">Hacer pedido</button>
+  </div>
+  <div id="mensajeDiv">
+    <span id="mensajeContenido"></span>
+    <button id="cerrarMensaje">Cerrar</button>
+</div>
+</form>
+
+<script src="./js/main.js"></script>
 </body>
 </html>

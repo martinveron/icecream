@@ -1,65 +1,153 @@
-//Esta funcion calcula el precio del helado, siendo el precio por kilo 8000.
-function priceCalculator(weight) { 
-    let calculation = weight * 8000;
-    return calculation;
-}
-
-
-//Esta funcion calcula el precio final de la compra considerando si es cliente habitual o no (mas adelante se haría el calculo segun las compras que haya realizado el usuario en el ultimo tiempo)
-function finalPrice(weight, customerRegular) { 
-    let calculation = priceCalculator(weight);
-    if (customerRegular) {
-        let discount = calculation * 0.85;
-        return discount;
+listaSabores = [
+    "Chocolate",
+    "Vainilla",
+    "Fresa",
+    "Menta",
+    "Limón",
+    "Napolitano",
+    "Cookies and Cream",
+    "Mango",
+    "Frutos del Bosque",
+    "Café",
+    "Caramelo",
+    "Avellana",
+    "Pistacho",
+    "Mocha",
+    "Tiramisú",
+    "Tarta de Queso",
+    "Piña Colada",
+    "Plátano",
+    "Coco",
+    "Chicle",
+    "Cereza",
+    "Mora",
+    "Miel",
+    "Almendra",
+    "Maracuyá",
+    "Galleta",
+    "Canela",
+    "Arándano",
+    "Ruibarbo",
+    "Jengibre"
+  ]; //Declaro la constante de todos los sabores posibles para su eleccion
+  
+  const saboresPorPote = {
+    '1/4': 3,
+    '1/2': 4,
+    '1': 5
+  }; //Declaro la constante de la cantidad de sabores por pote
+  
+  let saboresSeleccionados = []; //Declaro la variable para almacenar los sabores seleccionados por el usuario
+  
+  
+  const tipoPoteSeleccionadoLS = localStorage.getItem('tipoPoteSeleccionado'); // Recuperar el tipo de pote seleccionado del localStorage
+  
+  
+  const saboresSeleccionadosLS = JSON.parse(localStorage.getItem('saboresSeleccionados')) || []; // Recuperar los sabores seleccionados del localStorage
+  
+  
+  if (tipoPoteSeleccionadoLS) { //Condicion por si llegase a haber algo en el local storage que corresponda al select
+    document.getElementById('tipoPote').value = tipoPoteSeleccionadoLS;
+  }
+  
+  
+  if (saboresSeleccionadosLS.length > 0) { //Lo mismo que arriba pero para los sabores
+    saboresSeleccionados = saboresSeleccionadosLS;
+    actualizarListaSeleccionados();
+  }
+  
+  function generarListaSabores() { //LA FUNCION EN DEFINITIVA GENERA UNA LISTA DE SABORES DISPONIBLES CON UN BOTON + A UN COSTADO PARA AGREGARLO AL ARRAY DE SABORES SELECCIONADOS
+    const tipoPote = document.getElementById('tipoPote').value; //Vinculo la constante con el seleccionador de potes.
+    const numSaboresPermitidos = saboresPorPote[tipoPote]; //Declaro una constante para establecer un limite de sabores por pote.
+  
+    const saboresDiv = document.getElementById('sabores'); //Vinculo el div a una constante
+    saboresDiv.innerHTML = ''; //Me aseguro de que el div siempre inicie vacio
+  
+    listaSabores.forEach(sabor => { //Funcion flecha, por cada sabor en el array de sabores:
+      const saborSpan = document.createElement('span'); //Me crea un elemento span y lo vinculo a la constante
+      saborSpan.textContent = sabor; //Establece el texto del elemento span con el valor del sabor actual del array.
+  
+      const agregarBtn = document.createElement('button'); //Me crea un boton y lo vinculo a una constante
+      agregarBtn.textContent = '+'; //Le agrego un simbolo + para que simbolize "Agregar sabor a mi pote"
+      agregarBtn.addEventListener('click', function(event) { //Agrego un escuchador de click
+        event.preventDefault(); //Prevengo el comportamiento por defecto porque me enviaba el formulario cada vez que le daba a cualquier boton.
+        agregarSabor(sabor, numSaboresPermitidos); //Llama a la función con el sabor actual y el número de sabores permitidos.
+      });
+  
+      saboresDiv.appendChild(saborSpan); //Me aseguro de que el span sea hijo del div sabores
+      saboresDiv.appendChild(agregarBtn); //Lo mismo de arriba pero con el boton
+    });
+  }
+  function agregarSabor(sabor, numSaboresPermitidos) { //ESTA FUNCION AGREGA SABORES AL ARRAY DE SABORES SELECCIONADOS (se usa dentro de la funcion anterior)
+    if (saboresSeleccionados.length < numSaboresPermitidos) { //Condicion para limitar el numero de sabores por pote
+      if (!saboresSeleccionados.includes(sabor)) { //Condicion para evitar repeticion de sabores en un pedido
+        saboresSeleccionados.push(sabor); //Push del sabor al array
+        localStorage.setItem('saboresSeleccionados', JSON.stringify(saboresSeleccionados));
+        actualizarListaSeleccionados(); //Se llama a la funcion
+      } else {
+        mostrarMensaje('Ya has seleccionado este sabor.');
+      }
     } else {
-        return calculation;
+      mostrarMensaje(`Ya has seleccionado el máximo de ${numSaboresPermitidos} sabores permitidos.`);
     }
-}
-
-function comprarHelado() {
-    // Lista de sabores en un array
-    const listaSabores = [
-        "Chocolate", "Vainilla", "Fresa", "Menta", "Limón", "Napolitano", "Dulce de Leche", "Mango", 
-        "Frutos del Bosque", "Café", "Caramelo", "Avellana", "Pistacho", "Mocha", "Tiramisú", 
-        "Kinder", "Limon", "Banana Split", "Coco", "Chicle", "Cereza", "Mora", "Miel", "Almendra", 
-        "Maracuyá", "Oreo", "Canela", "Arándano", "Ruibarbo", "Jengibre"
-    ];
-    //Declaro las constantes para los tamaños de los potes, en sabores dejo un array vacio para llenar luego con los prompts
-    const poteCuarto = {nombre: "cuarto", nombreCompleto: "Cuarto de Kilo", cantidadSabores: 3, peso: 0.25, sabores: []};
-    const poteMedio = {nombre: "medio", nombreCompleto: "Medio Kilo", cantidadSabores: 4, peso: 0.5, sabores: []};
-    const poteKilo = {nombre: "kilo", nombreCompleto: "Un Kilogramo", cantidadSabores: 5, peso: 1, sabores: []};
-
-    //Primer prompt que aparece para elegir el tamaño de pote
-    let pote = prompt("Ingrese el peso de pote deseado. (cuarto, medio, kilo)").toLowerCase();
-    //Declaro la variable para almacenar luego la selección del pote
-    let poteSeleccionado;
-
-    // Vincular la seleccion del usuario con los objetos comparando su nombre
-    if (pote === "cuarto") {
-        poteSeleccionado = poteCuarto;
-    } else if (pote === "medio") {
-        poteSeleccionado = poteMedio;
-    } else if (pote === "kilo") {
-        poteSeleccionado = poteKilo;
-    } else {
-        alert("Has ingresado un tamaño incorrecto, las opciones son: cuarto, medio, kilo.");
-        return; // El return para interrumpir la funcion en caso de que el usuario cancele el prompt
-    }
-
-    // Bucles para definir la cantidad de sabores permitidos por cada pote
-    for (let i = 0; i < poteSeleccionado.cantidadSabores; i++) { //iteración por cada sabor
-        let sabor = prompt(`Ingrese el sabor ${i + 1} de ${poteSeleccionado.cantidadSabores}. Lista de sabores: ${listaSabores.join(', ')}`).toLowerCase(); //Declaro la variable sabor, luego incrustro la iteración del bucle +1 (porque la inicial es 0) luego incrustro la cantidad de sabores permitidos en la string y luego la lista de sabores separados con coma (para esto uso el .join)
-        while (!listaSabores.map(s => s.toLowerCase()).includes(sabor)) {  //Este while es para asegurarnos de que el sabor solicitado este en la lista de sabores
-            sabor = prompt(`Por favor, ingrese un sabor válido. Lista de sabores: ${listaSabores.join(', ')}`).toLowerCase(); //En caso de ingresar un sabor que no esté en la lista apareceria este prompt
-        }
-        poteSeleccionado.sabores.push(sabor); //Llevo al array el sabor almacenado en la variable sabor y se repite el ciclo hasta completar la cantidad de sabores correspondientes
-    }
-
-    // Usando las funciones que creé para la pre entrega anterior podemos calcular el precio de la misma manera.
-    let customerRegular = confirm("¿Eres cliente habitual?");
-    let pesoTotal = poteSeleccionado.peso;
-    let precioFinal = finalPrice(pesoTotal, customerRegular);
-    alert(`Has elegido un pote de ${poteSeleccionado.nombreCompleto} con los siguientes sabores: ${poteSeleccionado.sabores.join(', ')}. El precio final es: ${precioFinal} pesos.`);
-}
-
-comprarHelado();
+  }
+  
+  function actualizarListaSeleccionados() { //ESTA FUNCION ES LA QUE PERMITE QUE SE VAYAN MOSTRANDO LOS SABORES SELECCIONADO DEBAJO
+    const listaSeleccionados = document.getElementById('listaSeleccionados'); //Declaro la constante y la vinculo con la lista
+    listaSeleccionados.innerHTML = ''; //Me aseguro de que la lista empiece vacia
+  
+    saboresSeleccionados.forEach(sabor => { //Funcion flecha que agrega un li a la ul de los sabores seleccionados
+      const saborItem = document.createElement('li'); //declaro la constante y la vinculo con el/las li
+      saborItem.textContent = sabor; // Modifico el texto del li para que sea el mismo que el sabor
+      listaSeleccionados.appendChild(saborItem); //Vinculo el li creado con el ul del html
+    });
+  }
+  
+  //EN ESTA PARTE ARREGLO UN PROBLEMA QUE ME PERMITIA ENVIAR EL FORMULARIO CON MAS SABORES DE LOS PERMITIDOS EN CIERTOS POTES SI ELEGIA PRIMERO EL MAS GRANDE Y LE AGREGABA LOS SABORES Y LUEGO VOLVIA AL PEQUEÑO
+  
+  document.getElementById('tipoPote').addEventListener('change', function() {// Agrego el evento change para escuchar todos los cambios que ocurran en el select de potes
+  
+  const tipoPoteSeleccionado = this.value; // Declaro la constante del pote seleccionado en ese momento. This hace referencia a ese elemento y value al valor en ese momento.
+  localStorage.setItem('tipoPoteSeleccionado', tipoPoteSeleccionado); //Almaceno en el local storage el tipo de pote seleccionado
+  const numSaboresPermitidos = saboresPorPote[tipoPoteSeleccionado]; // Declaro una variable para vincularla con el pote seleccionado, accediendo al valor del objeto
+    if (saboresSeleccionados.length > numSaboresPermitidos) { //Condicion para comprobar si el tamaño del array de los sabores es mayor al de los permitidos
+      // Crea un mensaje indicando que se eliminarán los sabores excedentes
+      const mensaje = `El nuevo tamaño del pote solo permite ${numSaboresPermitidos} sabores. Se eliminarán los sabores excedentes.`;
+      // Muestra una alerta con el mensaje creado
+      mostrarMensaje(mensaje);
+  
+      // Elimina los sabores excedentes del array de sabores seleccionados
+      saboresSeleccionados.splice(numSaboresPermitidos); //Uso el metodo splice y le paso el valor de los sabores permitidos, lo que me deja la lista con los primeros sabores que selecciono borrando el o los excedentes
+      actualizarListaSeleccionados(); //Llamo a la funcion para que se actualice la lista
+  }
+  generarListaSabores(); //Genero la lista nuevamente para que muestre el contenido actualizado
+  });
+  
+  
+  document.querySelector('#heladoForm button[type="button"]').addEventListener('click', function() { // Evento para el click de boton que simula el envio del formulario a un futuro backend (por ahora solo lo reinicia)
+  mostrarMensaje('¡Pedido realizado!'); // Reemplazo del alert de pedido realizado con un div en la parte de abajo
+  localStorage.clear(); //Limpio la local storage porque si no me quedan guardados los sabores para siempre (en este caso limpia toda la storage, podria buscar como limpiar solo lo que necesito pero literalmente es lo ultimo que estoy haciendo si no no llego, para la proxima pre entrega prometo arreglarlo)
+  resetearSeleccion(); // Reseteo el formulario y la seleccion de pote
+  });
+  
+  function mostrarMensaje(mensaje) { //En reemplazo del alert uso este div para ir mostrando informacion (podria hacerlo flotante y oscurecer el fondo, es mi idea principal pero por el momento se va a quedar asi)
+    const mensajeDiv = document.getElementById('mensajeDiv'); //Vinculo el div a una constante 
+    const mensajeContenido = document.getElementById('mensajeContenido'); //Vinculo el span del html a una constante
+    const cerrarBoton = document.getElementById('cerrarMensaje'); //Vinculo el boton para cerrar el div (ocultarlo)
+    mensajeContenido.textContent = mensaje; //Vinculo el parametro de la funcion con el texto que se mostrara en el span
+    mensajeDiv.style.display = 'block'; //Hago visible el span
+    cerrarBoton.addEventListener('click', function(event) { //Escuchador para el boton de cerrar
+      event.preventDefault(); // Prevenir el comportamiento por defecto
+      mensajeDiv.style.display = 'none'; //Vuelvo a ocultar el div una vez pulsado el boton cerrar
+    });
+  }
+  
+  
+  function resetearSeleccion() { // Creo una funcion para dejar los sabores seleccionados a 0
+  saboresSeleccionados = []; // Limpio el array de sabores seleccionados
+  actualizarListaSeleccionados(); //Ejecuto la funcion para actualizar la interfaz del usuario donde se ven los sabores seleccionados
+  document.getElementById('tipoPote').selectedIndex = 0; // Forzamos que la seleccion por defecto sea la primera (la que esta vacia)
+  generarListaSabores(); //Vuelvo a ejecutar la funcion que genera la lista de sabores para comenzar con un nuevo pedido
+  }
+  
+  

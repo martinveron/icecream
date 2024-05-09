@@ -20,7 +20,7 @@ if (saboresSeleccionadosLS.length > 0) {
 }; //Lo mismo que arriba pero para los sabores
 
 function cargarSaboresDesdeJSON() { //// Esta función para cargar la lista de sabores desde un archivo JSON local.
-  fetch('../sabores.json') // Solicitud para obtener el archivo sabores.json.
+  fetch('sabores.json') // Solicitud para obtener el archivo sabores.json.
     .then(response => {
       if (!response.ok) {
         throw new Error('No se pudo cargar la lista de sabores de helado');

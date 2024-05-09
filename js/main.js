@@ -28,7 +28,6 @@ function cargarSaboresDesdeJSON() { //// Esta función para cargar la lista de s
       return response.json(); // Se convierte la respuesta en formato JSON.
     })
     .then(data => {
-      console.log('Lista de sabores de helado cargada:', data.sabores); // Se muestra en la consola la lista de sabores en consola
       generarListaSabores(data.sabores); //Llamo a la funcion para mostrar los sabores en la interfaz
     })
     .catch(error => {

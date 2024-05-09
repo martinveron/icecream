@@ -104,3 +104,12 @@ button[type="button"]:hover {
     grid-template-columns: 1fr;
   }
 }
+
+
+#borrarPedido{
+  background-color: #a00606;
+}
+
+#borrarPedido:hover{
+  background-color: #da0808;
+}

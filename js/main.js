@@ -96,14 +96,21 @@ document.getElementById('tipoPote').addEventListener('change', function() {  // 
     saboresSeleccionados.splice(numSaboresPermitidos); //Uso el metodo splice y le paso el valor de los sabores permitidos, lo que me deja la lista con los primeros sabores que selecciono borrando el o los excedentes
     actualizarListaSeleccionados(); //Llamo a la funcion para que se actualice la lista
   }
-  cargarSaboresDesdeJSON(); // REVISAR
+  cargarSaboresDesdeJSON(); 
 }); 
 
-document.querySelector('#heladoForm button[type="button"]').addEventListener('click', function() { // Evento para el click de boton que simula el envio del formulario a un futuro backend (por ahora solo lo reinicia)
+document.querySelector('#hacerPedido').addEventListener('click', function() { // Evento para el click de boton que simula el envio del formulario a un futuro backend (por ahora solo lo reinicia)
   swalSuccess('¡Pedido realizado!'); //Disparador del mensaje de la libreria sweet alert con el signo de success
   localStorage.clear(); //Limpio la local storage porque si no me quedan guardados los sabores para siempre
   resetearSeleccion(); // Reseteo el formulario y la seleccion de pote
-  cargarSaboresDesdeJSON(); // REVISAR
+  cargarSaboresDesdeJSON(); 
+});
+
+document.querySelector('#borrarPedido').addEventListener('click', function() { // Evento para el click de boton de borrar las selecciones
+  swalSuccess('¡Se han eliminado los sabores seleccionados!'); //Disparador del mensaje de la libreria sweet alert con el signo de success
+  localStorage.clear(); //Limpio la local storage porque si no me quedan guardados los sabores para siempre
+  resetearSeleccion(); // Reseteo el formulario y la seleccion de pote
+  cargarSaboresDesdeJSON(); 
 });
 
 

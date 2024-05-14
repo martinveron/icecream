@@ -1,4 +1,4 @@
-const saboresPorPote = { 
+const saboresPorPote = {
   '1/4': 3,
   '1/2': 4,
   '1': 5
@@ -45,7 +45,7 @@ function generarListaSabores(sabores) { //Esta funcion genera visualmente la lis
 
     const agregarBtn = document.createElement('button'); //Me crea un boton y lo vinculo a una constante
     agregarBtn.textContent = '+'; //Le agrego un simbolo + para que simbolize "Agregar sabor a mi pote"
-    agregarBtn.addEventListener('click', function(event) { //Agrego un escuchador de click
+    agregarBtn.addEventListener('click', function (event) { //Agrego un escuchador de click
       event.preventDefault(); //Prevengo el comportamiento por defecto porque me enviaba el formulario cada vez que le daba a cualquier boton.
       agregarSabor(sabor); //Llama a la función con el sabor actual
     });
@@ -55,13 +55,20 @@ function generarListaSabores(sabores) { //Esta funcion genera visualmente la lis
   });
 }
 
-function agregarSabor(sabor) { //ESTA FUNCION AGREGA SABORES AL ARRAY DE SABORES SELECCIONADOS (se usa dentro de la funcion anterior)
-  const tipoPote = document.getElementById('tipoPote').value; //Declaro la constante y la vinculo al select de potes
-  const numSaboresPermitidos = saboresPorPote[tipoPote]; //Declaro la constante para definir la cantidad de sabores permitidos segun el pote que se haya seleccionado
+function agregarSabor(sabor) {
+  const tipoPote = document.getElementById('tipoPote').value;
+  
+  
+  if (!tipoPote) { // Verificar si se ha seleccionado un tipo de pote antes de acceder al objeto saboresPorPote
+    swalError('Seleccione un tipo de pote primero');
+    return; // Salir de la función si no se ha seleccionado un tipo de pote
+  }
 
-  if (saboresSeleccionados.length < numSaboresPermitidos) { //Condicion para limitar el numero de sabores por pote
-    if (!saboresSeleccionados.includes(sabor)) { //Condicion para evitar repeticion de sabores en un pedido
-      saboresSeleccionados.push(sabor); //Push del sabor al array
+  const numSaboresPermitidos = saboresPorPote[tipoPote];
+
+  if (saboresSeleccionados.length < numSaboresPermitidos) {
+    if (!saboresSeleccionados.includes(sabor)) {
+      saboresSeleccionados.push(sabor);
       localStorage.setItem('saboresSeleccionados', JSON.stringify(saboresSeleccionados));
       actualizarListaSeleccionados();
     } else {
@@ -85,7 +92,7 @@ function actualizarListaSeleccionados() { //ESTA FUNCION ES LA QUE PERMITE QUE S
 
 //EN ESTA PARTE ARREGLO UN PROBLEMA QUE ME PERMITIA ENVIAR EL FORMULARIO CON MAS SABORES DE LOS PERMITIDOS EN CIERTOS POTES SI ELEGIA PRIMERO EL MAS GRANDE Y LE AGREGABA LOS SABORES Y LUEGO VOLVIA AL PEQUEÑO
 
-document.getElementById('tipoPote').addEventListener('change', function() {  // Agrego el evento change para escuchar todos los cambios que ocurran en el select de potes
+document.getElementById('tipoPote').addEventListener('change', function () {  // Agrego el evento change para escuchar todos los cambios que ocurran en el select de potes
   const tipoPoteSeleccionado = this.value; // Declaro la constante del pote seleccionado en ese momento. This hace referencia a ese elemento y value al valor en ese momento.
   localStorage.setItem('tipoPoteSeleccionado', tipoPoteSeleccionado); //Almaceno en el local storage el tipo de pote seleccionado
   const numSaboresPermitidos = saboresPorPote[tipoPoteSeleccionado]; // Declaro una constante para vincularla con el pote seleccionado, accediendo al valor del objeto
@@ -96,21 +103,29 @@ document.getElementById('tipoPote').addEventListener('change', function() {  // 
     saboresSeleccionados.splice(numSaboresPermitidos); //Uso el metodo splice y le paso el valor de los sabores permitidos, lo que me deja la lista con los primeros sabores que selecciono borrando el o los excedentes
     actualizarListaSeleccionados(); //Llamo a la funcion para que se actualice la lista
   }
-  cargarSaboresDesdeJSON(); 
-}); 
-
-document.querySelector('#hacerPedido').addEventListener('click', function() { // Evento para el click de boton que simula el envio del formulario a un futuro backend (por ahora solo lo reinicia)
-  swalSuccess('¡Pedido realizado!'); //Disparador del mensaje de la libreria sweet alert con el signo de success
-  localStorage.clear(); //Limpio la local storage porque si no me quedan guardados los sabores para siempre
-  resetearSeleccion(); // Reseteo el formulario y la seleccion de pote
-  cargarSaboresDesdeJSON(); 
+  cargarSaboresDesdeJSON();
 });
 
-document.querySelector('#borrarPedido').addEventListener('click', function() { // Evento para el click de boton de borrar las selecciones
+document.querySelector('#hacerPedido').addEventListener('click', function () {
+  
+  var tipoPoteSeleccionadoLS = document.getElementById('tipoPote').value;
+  
+  
+  if (!tipoPoteSeleccionadoLS) { // Condicion para verificar si el valor seleccionado está vacío
+    swalError('Seleccione un tipo de pote'); 
+  } else {
+    swalSuccess('¡Pedido realizado!');
+    localStorage.clear();
+    resetearSeleccion();
+    cargarSaboresDesdeJSON();
+  }
+});
+
+document.querySelector('#borrarPedido').addEventListener('click', function () { // Evento para el click de boton de borrar las selecciones
   swalSuccess('¡Se han eliminado los sabores seleccionados!'); //Disparador del mensaje de la libreria sweet alert con el signo de success
   localStorage.clear(); //Limpio la local storage porque si no me quedan guardados los sabores para siempre
   resetearSeleccion(); // Reseteo el formulario y la seleccion de pote
-  cargarSaboresDesdeJSON(); 
+  cargarSaboresDesdeJSON();
 });
 
 
